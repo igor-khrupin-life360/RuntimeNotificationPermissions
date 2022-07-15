@@ -6,10 +6,8 @@ import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.provider.Settings
 import android.text.Html
 import android.text.Spanned
 import android.widget.Toast
@@ -45,9 +43,21 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.openPermissionSettings.setOnClickListener {
-            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-            val uri: Uri = Uri.fromParts("package", packageName, null)
-            intent.data = uri
+            val intent = Intent()
+            intent.action = "android.settings.APP_NOTIFICATION_SETTINGS"
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+
+//for Android 5-7
+
+//for Android 5-7
+            intent.putExtra("app_package", packageName)
+            intent.putExtra("app_uid", applicationInfo.uid)
+
+// for Android 8 and above
+
+// for Android 8 and above
+            intent.putExtra("android.provider.extra.APP_PACKAGE", packageName)
+
             startActivity(intent)
         }
     }
