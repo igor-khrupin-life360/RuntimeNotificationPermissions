@@ -85,11 +85,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun getNotificationChannelImportance(): Int {
-        val notificationManager: NotificationManager =
-            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        val notificationChannel: NotificationChannel =
-            notificationManager.getNotificationChannel(CHANNEL_ID)
-        return notificationChannel.importance
+        val notificationManager: NotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val notificationChannel: NotificationChannel? = notificationManager.getNotificationChannel(CHANNEL_ID)
+        return notificationChannel?.importance ?: 0
     }
 
     private fun getNotificationChannelEnabledMessage(): Spanned {
