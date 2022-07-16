@@ -34,7 +34,7 @@
         android:id="@+id/notifications_state"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="21dp"
+        android:layout_marginTop="12dp"
         android:padding="10dp"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -43,27 +43,39 @@
         app:layout_constraintTop_toBottomOf="@+id/permission_state"
         tools:text="Test" />
 
+    <TextView
+        android:id="@+id/notifications_channel_state"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:padding="10dp"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/notifications_state"
+        tools:text="Test" />
+
     <Button
         android:id="@+id/request_permission"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="36dp"
+        android:layout_marginTop="24dp"
         android:background="@drawable/btn_bg"
         android:text="Request POST_NOTIFICATIONS Permission"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.494"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/notifications_state" />
+        app:layout_constraintTop_toBottomOf="@+id/notifications_channel_state" />
 
     <Button
         android:id="@+id/open_permission_settings"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
         android:background="@drawable/btn_bg"
-        android:layout_marginTop="48dp"
         android:text="Open Permission Settings"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/post_notification" />
 
@@ -71,7 +83,7 @@
         android:id="@+id/open_app_settings"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="48dp"
+        android:layout_marginTop="16dp"
         android:background="@drawable/btn_bg"
         android:text="Open App Settings"
         app:layout_constraintEnd_toEndOf="parent"
@@ -83,11 +95,11 @@
         android:id="@+id/post_notification"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="56dp"
+        android:layout_marginTop="24dp"
         android:background="@drawable/btn_bg"
         android:text="Post Notification"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintHorizontal_bias="0.502"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/request_permission" />
 

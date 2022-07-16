@@ -81,6 +81,29 @@ class MainActivity : AppCompatActivity() {
     private fun updateSettingsState() {
         binding.permissionState.text = getPermissionStateMessage()
         binding.notificationsState.text = getNotificationsEnabledStateMessage()
+        binding.notificationsChannelState.text = getNotificationChannelEnabledMessage()
+    }
+
+    private fun getNotificationChannelImportance(): Int {
+        val notificationManager: NotificationManager =
+            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val notificationChannel: NotificationChannel =
+            notificationManager.getNotificationChannel(CHANNEL_ID)
+        return notificationChannel.importance
+    }
+
+    private fun getNotificationChannelEnabledMessage(): Spanned {
+        val importance = getNotificationChannelImportance()
+        val html = if (isNotificationChannelEnabled(importance)) {
+            "Notification channel importance = $importance <b><font color='green'>USER CAN SEE NOTIFICATION</font></b>"
+        } else {
+            "Notification channel importance = $importance <b><font color='red'>USER CAN NOT SEE NOTIFICATION</font></b>"
+        }
+        return Html.fromHtml(html, Html.FROM_HTML_MODE_COMPACT)
+    }
+
+    private fun isNotificationChannelEnabled(importance: Int): Boolean {
+        return importance > NotificationManager.IMPORTANCE_NONE
     }
 
     private val requestPermissionLauncher =
@@ -92,7 +115,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val name = "Test Channel"
+            val name = "<Some name> for notification channel"
             val descriptionText = "channel description"
             val importance = NotificationManager.IMPORTANCE_DEFAULT
             val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
