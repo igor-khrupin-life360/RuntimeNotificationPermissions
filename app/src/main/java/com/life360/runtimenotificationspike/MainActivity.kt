@@ -80,7 +80,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateSettingsState() {
         binding.permissionState.text = getPermissionStateMessage()
-        binding.permissionState.isEnabled = isAndroid13()
         binding.notificationsState.text = getNotificationsEnabledStateMessage()
     }
 
@@ -112,10 +111,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun getPermissionStateMessage(): Spanned {
-        val html = if(isGrantedPermission()) {
-            "POST_NOTIFICATIONS Granted (for Android-13 devices only)? - <b><font color='green'>TRUE</font></b>"
+        val html = if (isAndroid13()) {
+            if (isGrantedPermission()) {
+                "POST_NOTIFICATIONS Granted (for Android-13 devices only)? - <b><font color='green'>TRUE</font></b>"
+            } else {
+                "POST_NOTIFICATIONS Granted (for Android-13 devices only)? - <b><font color='red'>FALSE</font></b>"
+            }
         } else {
-            "POST_NOTIFICATIONS Granted (for Android-13 devices only)? - <b><font color='red'>FALSE</font></b>"
+            "POST_NOTIFICATIONS check required for Android-13 devices only"
         }
         return Html.fromHtml(html, Html.FROM_HTML_MODE_COMPACT)
     }
