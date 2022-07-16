@@ -6,8 +6,10 @@ import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.text.Html
 import android.text.Spanned
 import android.widget.Toast
@@ -33,8 +35,12 @@ class MainActivity : AppCompatActivity() {
 
         binding.postNotification.setOnClickListener {
             postNotification()
-            if (!isGrantedPermission()) {
+            if (!isGrantedPermission() && !isNotificationsEnabled() && isAndroid13()) {
+                Toast.makeText(applicationContext, "Can\'t post notification without POST_NOTIFICATIONS granted AND Notifications Enabled", Toast.LENGTH_LONG).show()
+            } else if (!isGrantedPermission() && isAndroid13()) {
                 Toast.makeText(applicationContext, "Can\'t post notification without POST_NOTIFICATIONS granted", Toast.LENGTH_LONG).show()
+            } else if (!isNotificationsEnabled()) {
+                Toast.makeText(applicationContext, "Can\'t post notification without Notifications Enabled", Toast.LENGTH_LONG).show()
             }
         }
 
@@ -44,40 +50,45 @@ class MainActivity : AppCompatActivity() {
 
         binding.openPermissionSettings.setOnClickListener {
             val intent = Intent()
-            intent.action = "android.settings.APP_NOTIFICATION_SETTINGS"
+            intent.action = Settings.ACTION_APP_NOTIFICATION_SETTINGS
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-
-//for Android 5-7
-
-//for Android 5-7
             intent.putExtra("app_package", packageName)
             intent.putExtra("app_uid", applicationInfo.uid)
-
-// for Android 8 and above
-
-// for Android 8 and above
             intent.putExtra("android.provider.extra.APP_PACKAGE", packageName)
 
             startActivity(intent)
         }
+
+        binding.openAppSettings.setOnClickListener {
+            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            intent.data = Uri.parse("package:$packageName")
+            startActivity(intent)
+        }
+    }
+
+    private fun isAndroid13(): Boolean {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
     }
 
     override fun onResume() {
         super.onResume()
         binding.info.text = getInfo()
-        updatePermissionState()
+        updateSettingsState()
         createNotificationChannel()
     }
 
-    private fun updatePermissionState() {
-        binding.permissionState.text = getPermissionState()
+    private fun updateSettingsState() {
+        binding.permissionState.text = getPermissionStateMessage()
+        binding.permissionState.isEnabled = isAndroid13()
+        binding.notificationsState.text = getNotificationsEnabledStateMessage()
     }
 
     private val requestPermissionLauncher =
         registerForActivityResult(
             ActivityResultContracts.RequestPermission()
         ) { isGranted: Boolean ->
-            updatePermissionState()
+            updateSettingsState()
         }
 
     private fun createNotificationChannel() {
@@ -100,13 +111,26 @@ class MainActivity : AppCompatActivity() {
                 "\nApplication targetSDKVersion: API-${applicationContext.applicationInfo.targetSdkVersion}"
     }
 
-    private fun getPermissionState(): Spanned {
+    private fun getPermissionStateMessage(): Spanned {
         val html = if(isGrantedPermission()) {
-            "POST_NOTIFICATIONS Granted? - <b><font color='green'>TRUE</font></b>"
+            "POST_NOTIFICATIONS Granted (for Android-13 devices only)? - <b><font color='green'>TRUE</font></b>"
         } else {
-            "POST_NOTIFICATIONS Granted? - <b><font color='red'>FALSE</font></b>"
+            "POST_NOTIFICATIONS Granted (for Android-13 devices only)? - <b><font color='red'>FALSE</font></b>"
         }
         return Html.fromHtml(html, Html.FROM_HTML_MODE_COMPACT)
+    }
+
+    private fun getNotificationsEnabledStateMessage(): Spanned {
+        val html = if (isNotificationsEnabled()) {
+            "Notifications Enabled for the app? - <b><font color='green'>TRUE</font></b>"
+        } else {
+            "Notifications Enabled for the app? - <b><font color='red'>FALSE</font></b>"
+        }
+        return Html.fromHtml(html, Html.FROM_HTML_MODE_COMPACT)
+    }
+
+    private fun isNotificationsEnabled(): Boolean {
+        return NotificationManagerCompat.from(this).areNotificationsEnabled()
     }
 
     private fun isGrantedPermission(): Boolean {
